@@ -145,7 +145,7 @@ void APhoenixCharacter::UpdateHealthCurrent(float HealthChange)
 
 // =============================================================================
 //
-//					PLAYER GAMEPLAY FUNCTIONS
+//		PLAYER GAMEPLAY FUNCTIONS
 //
 // Reference: http://www.cplusplus.com/reference/cstdlib/rand/
 // =============================================================================
@@ -197,7 +197,7 @@ void APhoenixCharacter::UpdateXpCurrent(float XpChange)
 
 // ================================================================================
 //
-//									INPUT
+//		INPUT
 //
 // ================================================================================
 void APhoenixCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -236,7 +236,7 @@ void APhoenixCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 // ===========================================================================
 //
-//						INVENTORY FUNCTIONALITY
+//		INVENTORY FUNCTIONALITY
 //
 // ===========================================================================
 int32 APhoenixCharacter::GetCurrentInventorySlot()
@@ -289,7 +289,7 @@ void APhoenixCharacter::MoveDownInventorySlot()
 
 // ===================================================================
 //
-//							MOVEMENT
+//		MOVEMENT
 //
 // ===================================================================
 
@@ -326,7 +326,7 @@ void APhoenixCharacter::LookUpAtRate(float Rate)
 
 // ===================================================================================
 //
-//				WIELDED ITEM & MOUSE BUTTON ITEM FUNCTIONALITY
+//		WIELDED ITEM & MOUSE BUTTON ITEM FUNCTIONALITY
 //
 // ===================================================================================
 void APhoenixCharacter::UpdateItem()
@@ -442,7 +442,7 @@ void APhoenixCharacter::PlayHitAnim()
 
 // =================================================================================
 //
-//							BLOCK FUNCTIONALITY
+//		BLOCK FUNCTIONALITY
 //
 // =================================================================================
 void APhoenixCharacter::CheckForBlock()
