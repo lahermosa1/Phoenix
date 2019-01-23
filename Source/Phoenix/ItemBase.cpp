@@ -6,7 +6,7 @@
 #include "PhoenixCharacter.h"
 #include <Components/BoxComponent.h>
 #include <Components/SkeletalMeshComponent.h>
-#include <Components/StaticMeshComponent.h>
+#include <Components/StaticMeshComponent.h>  // needed???
 #include <Components/PrimitiveComponent.h>
 
 // Sets default values
@@ -45,25 +45,15 @@ void AItemBase::Tick(float DeltaTime)
 void AItemBase::OnRadiusEnter(UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (bIsActive)
-		{
+	{
 		APhoenixCharacter * Character = Cast<APhoenixCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 		Character->AddItemToInventory(this);
 		Hide(true);
-		}
+	}
 }
 
 void AItemBase::Hide(bool bVisible)
 {
 	WieldableMesh->SetVisibility(false);
 	bIsActive = !bVisible;
-}
-
-void AItemBase::OnPickedUp()
-{
-
-}
-
-void AItemBase::OnUsed()
-{
-	Destroy();
 }

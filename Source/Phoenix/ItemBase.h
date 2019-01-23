@@ -37,14 +37,9 @@ public:
 		UTexture2D* PickupThumbnail;
 
 	UFUNCTION()
-		void OnRadiusEnter(UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+		virtual void OnRadiusEnter(UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
 	bool bIsActive;
 
-	void Hide(bool bVisible);
-
-	void OnPickedUp();
-
-	void OnUsed();
-
+	virtual void Hide(bool bVisible);
 };

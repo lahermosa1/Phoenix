@@ -2,6 +2,7 @@
 // Reference: https://github.com/carlso70/UE4-Minecraft/tree/master/Source/Minecraft
 // Reference (MC C++): https://www.youtube.com/playlist?list=PLXbYY5fO3b99aRm_Tmb3g2TH_8FxkKGyA
 // Reference: https://unrealcpp.com/health-bar-ui-hud/
+// Reference (correct character .h and .cpp code): https://github.com/Harrison1/unrealcpp/tree/master/HealthBar
 
 #include "PhoenixCharacter.h"
 #include "PhoenixProjectile.h"
@@ -23,6 +24,7 @@
 #include <cmath>
 #include <random>
 #include <stdlib.h>
+#include "ItemBlock.h"
 
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -83,12 +85,11 @@ void APhoenixCharacter::BeginPlay()
 	HealthMax = 1000.0f;
 	HealthCurrent = HealthMax;
 	HealthPercent = 1.0f;
-	HealthPrevious = HealthPercent;
+	bCanBeDamaged = true;
 
 	XpMax = 1000.0f;
 	XpCurrent = 0.0f;   // Make sure to NOT divide by zero!!!!!
 	XpPercent = 1.0f;
-	XpPrevious = XpPercent;
 
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
@@ -103,6 +104,12 @@ void APhoenixCharacter::Tick(float DeltaTime)
 }
 
 
+// =============================================================================
+//
+//		PLAYER HEALTH & DAMAGE LOGIC
+//
+// Reference: https://unrealcpp.com/health-bar-ui-hud/
+// =============================================================================
 float APhoenixCharacter::GetHealthCurrent()
 {
 	return HealthPercent;
@@ -117,6 +124,16 @@ FText APhoenixCharacter::GetHealthCurrentIntText()
 	return HPText;
 }
 
+bool APhoenixCharacter::PlayRedSreenFlash()
+{
+	if(RedScreenFlash)
+	{
+		RedScreenFlash = false;
+		return true;
+	}
+	return false;
+}
+
 void APhoenixCharacter::DamageTimer()
 {
 	GetWorldTimerManager().SetTimer(MemberTimerHandle, this, &APhoenixCharacter::SetDamageState, 2.0f, false);
@@ -127,19 +144,24 @@ void APhoenixCharacter::SetDamageState()
 	bCanBeDamaged = true;
 }
 
-void APhoenixCharacter::ReceivePointDamage(float Damage, const class UDamageType * DamageType, FVector HitLocation, FVector HitNormal, class UPrimitiveComponent * HitComponent, FName BoneName, FVector ShotFromDirection, class AController * InstigatedBy, AActor * DamageCauser, const FHitResult & HitInfo)
+float APhoenixCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
 {
 	bCanBeDamaged = false;
-	//redFlash = true;
-	UpdateHealthCurrent(-Damage);
+	RedScreenFlash = true;
+	UpdateHealthCurrent(-DamageAmount);
 	DamageTimer();
+	return DamageAmount;
+
+	// DEBUG
+	FString msg = (TEXT("DAMAGE TAKEN"));
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Magenta, msg);
 }
 
 void APhoenixCharacter::UpdateHealthCurrent(float HealthChange)
 {
-	HealthCurrent += HealthChange;
-	HealthCurrent = FMath::Clamp(HealthCurrent, 0.0f, HealthMax);
-	HealthPrevious = HealthPercent;
+	
+	HealthCurrent = FMath::Clamp(HealthCurrent += HealthChange, 0.0f, HealthMax);
 	HealthPercent = HealthCurrent / HealthMax;
 }
 
@@ -168,6 +190,11 @@ int APhoenixCharacter::SkillDiceRollGrowthSlow()
 }
 
 
+// =============================================================================
+//
+//		PLAYER XP LOGIC
+//
+// =============================================================================
 float APhoenixCharacter::GetXpCurrent()
 {
 	return XpPercent;
@@ -182,16 +209,15 @@ FText APhoenixCharacter::GetXpCurrentIntText()
 	return EXPText;
 }
 
-void APhoenixCharacter::EarnXp( float XpEarned)
+float APhoenixCharacter::EarnXp(float XpEarned)
 {
 	UpdateXpCurrent(+XpEarned);
+	return XpEarned;
 }
 
 void APhoenixCharacter::UpdateXpCurrent(float XpChange)
 {
-	XpCurrent += XpChange;
-	XpCurrent = FMath::Clamp(XpCurrent, 0.0f, XpMax);
-	XpPrevious = XpPercent;
+	XpCurrent = FMath::Clamp(XpCurrent += XpChange, 0.0f, XpMax);
 	XpPercent = XpCurrent / XpMax;
 }
 

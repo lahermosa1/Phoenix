@@ -48,10 +48,16 @@ public:
 	void ResetBlock();
 
 	UPROPERTY(EditDefaultsOnly, Category = "C++ Variables")
-		TSubclassOf<class AItemBlock> ToSpawn;
+		TSubclassOf<class AItemBlock> SpawnedItemBlock;
 
 	UFUNCTION(BlueprintCallable, Category = "C++ Functions")
-	void SpawnItemBlock();
+		void SpawnItemBlock();
+
+// 	UPROPERTY(EditDefaultsOnly, Category = "C++ Variables")
+// 		TSubclassOf<class APhantomBlock> SpawnedPhantomBlock;
+// 
+// 	UFUNCTION(BlueprintCallable, Category = "C++ Functions")
+// 		void SpawnPhantomBlock();
 
 	// Called when block hits the final breaking stage
 	void OnBroken(bool HasRequiredPickaxe);

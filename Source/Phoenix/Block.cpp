@@ -7,6 +7,7 @@
 #include <Materials/MaterialInstanceDynamic.h>
 #include <Engine/Engine.h>
 #include "ItemBlock.h"
+#include "PhantomBlock.h"
 
 // Sets default values
 ABlock::ABlock()
@@ -67,7 +68,7 @@ void ABlock::ResetBlock()
 
 void ABlock::SpawnItemBlock()
 {
-	if (ToSpawn) 
+	if (SpawnedItemBlock)
 	{
 		UWorld* world = GetWorld();
 		
@@ -79,20 +80,52 @@ void ABlock::SpawnItemBlock()
 			
 			FRotator rotator;
 			
-			FVector spawnLocation = this->SM_Block->GetComponentLocation();
+			FVector spawnLocation = SM_Block->GetComponentLocation() + FVector(0.2f, 48.4f, 10.0f);
 			
-			world->SpawnActor<AItemBlock>(ToSpawn, spawnLocation, rotator, spawnParams);
+			world->SpawnActor<AItemBlock>(SpawnedItemBlock, spawnLocation, rotator, spawnParams);
+			
 
 			// DEBUG
-			FString msg = (TEXT("ItemBlock spawned"));
+			FString msg = (TEXT("ItemBlock SPAWNED"));
 
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, msg);
 		}
 	}
 }
 
+// void ABlock::SpawnPhantomBlock()
+// {
+// 	if (SpawnedPhantomBlock)
+// 	{
+// 		UWorld* world = GetWorld();
+// 
+// 		if (world)
+// 		{
+// 			FActorSpawnParameters spawnParams;
+// 			spawnParams.Owner = this;
+// 			spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+// 
+// 			FRotator rotator;
+// 
+// 			FVector spawnLocation = SM_Block->GetComponentLocation() + FVector(0.2f, 48.4f, 10.0f);
+// 
+// 			world->SpawnActor<APhantomBlock>(SpawnedPhantomBlock, spawnLocation, rotator, spawnParams);
+// 
+// 
+// 			// DEBUG
+// 			FString msg = (TEXT("PhantomBlock SPAWNED"));
+// 
+// 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, msg);
+// 		}
+// 	}
+// }
+
 void ABlock::OnBroken(bool HasRequiredPickaxe)
 {	
+	SpawnItemBlock();
+
+	/*SpawnPhantomBlock();*/
+
 	Destroy();
 }
 

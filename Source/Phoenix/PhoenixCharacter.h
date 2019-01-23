@@ -22,11 +22,11 @@ class APhoenixCharacter : public ACharacter
 
 		/** Location on gun mesh where projectiles should spawn. */
 		UPROPERTY(VisibleDefaultsOnly, Category = "Components")
-		class USceneComponent* FP_MuzzleLocation;
+			class USceneComponent* FP_MuzzleLocation;
 
 		/** First person camera */
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* Camera;
+			class UCameraComponent* Camera;
 
 		/** Pawn mesh: 1st person view (arms; seen only by self) */
 		UPROPERTY(VisibleDefaultsOnly, Category = "Components")
@@ -64,9 +64,6 @@ public:
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
 			float HealthPercent;
 
-		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
-			float HealthPrevious;
-
 		FTimerHandle MemberTimerHandle;
 
 		/** Get Health */
@@ -82,6 +79,11 @@ public:
 //		PLAYER DAMAGE (PUBLIC)
 //
 // ===============================================================================
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++ Variables")
+			float RedScreenFlash;
+
+		UFUNCTION(BlueprintPure, Category = "C++ Functions")
+			bool PlayRedSreenFlash();
 
 		/* Damage Timer */
 		UFUNCTION()
@@ -91,7 +93,7 @@ public:
 		UFUNCTION()
 			void SetDamageState();
 
-		void ReceivePointDamage(float Damage, const class UDamageType * DamageType, FVector HitLocation, FVector HitNormal, class UPrimitiveComponent * HitComponent, FName BoneName, FVector ShotFromDirection, class AController * InstigatedBy, AActor * DamageCauser, const FHitResult & HitInfo);
+		float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser);
 
 		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
 			void UpdateHealthCurrent(float HealthChange);
@@ -139,7 +141,7 @@ public:
 
 // =================================================================================
 //
-//		PLAYER LEVELING (OUBLIC)
+//		PLAYER LEVELING (PUBLIC)
 //
 // =================================================================================
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
@@ -151,9 +153,6 @@ public:
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
 			float XpPercent;
 
-		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
-			float XpPrevious;
-
 		/** Get Health */
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
 			float GetXpCurrent();
@@ -162,8 +161,7 @@ public:
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
 			FText GetXpCurrentIntText();
 
-		
-		void EarnXp(float XpEarned);
+		float EarnXp(float XpEarned);
 
 		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
 			void UpdateXpCurrent(float XpChange);
@@ -189,17 +187,17 @@ public:
 
 		/** Sound to play each time we fire */
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-		class USoundBase* FireSound;
+			class USoundBase* FireSound;
 
 		/** AnimMontage to play each time we hit */
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category =Gameplay)
-		class UAnimMontage* HitAnimation;
+			class UAnimMontage* HitAnimation;
 //////////////////////////////////////////////////////////////////////////////
 
 
 // ================================================================================
 //
-//		INVENTORY & HUD   (PUBLIC)
+//		INVENTORY & HUD (PUBLIC)
 //
 // ================================================================================
 public:
@@ -321,7 +319,7 @@ private:
 
 		// Stores the block currently being looked at by the player
 		UPROPERTY()
-		class ABlock* CurrentBlock;
+			class ABlock* CurrentBlock;
 
 		// Player character's reach
 		float Reach;
