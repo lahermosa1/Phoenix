@@ -36,7 +36,6 @@ class APhoenixCharacter : public ACharacter
 		UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 			class USkeletalMeshComponent* SKM_WieldedItem;
 
-
 public:
 
 		APhoenixCharacter();
@@ -47,11 +46,8 @@ protected:
 
 		virtual void Tick(float DeltaTime) override;
 
-
 // ===============================================================================
-//
-//		PLAYER STATS (PUBLIC)
-//
+//		HEALTH
 // ===============================================================================
 public:
 
@@ -66,15 +62,18 @@ public:
 
 		FTimerHandle MemberTimerHandle;
 
-		/** Get Health */
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
 			float GetHealthCurrent();
 
-		/** Get Health Text */
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
 			FText GetHealthCurrentIntText();
 
+		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
+			void UpdateHealthCurrent(float HealthChange);
 
+// ===============================================================================
+//		FOOD
+// ===============================================================================
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
 			float FoodMax;
 
@@ -87,13 +86,9 @@ public:
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
 			float FoodLossAmt;
 
-		/*FTimerHandle MemberTimerHandle;*/
-
-		/** Get Health */
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
 			float GetFoodCurrent();
 
-		/** Get Health Text */
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
 			FText GetFoodCurrentIntText();
 
@@ -104,33 +99,71 @@ public:
 			float LoseFood(float FoodLoss);
 
 // ===============================================================================
-//
-//		PLAYER DAMAGE (PUBLIC)
-//
+//		XP & LEVELING
+// ===============================================================================
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			float XpMax;
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			float XpCurrent;
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			float XpPercent;
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			int LevelCurrent;
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			int LevelMax;
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			int LevelNew;
+
+		/*
+			BlueprintPure -> accessing a variable's value & NOT changing things in the game
+			Convert to pure cast is used, no need to run execution pins through it
+		*/
+		UFUNCTION(BlueprintPure, Category = "C++ Functions")
+			float GetXpCurrent();
+
+		UFUNCTION(BlueprintPure, Category = "C++ Functions")
+			FText GetXpCurrentIntText();
+
+		/*
+			BlueprintCallable -> accessing a C++ function from Blueprint editor
+			as an execution pin
+		*/
+		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
+			float EarnXp(float XpGain);
+
+		UFUNCTION(BlueprintPure, Category = "C++ Functions")
+			int GetLevelCurrent();
+
+		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
+			int LevelUp();
+
+		UFUNCTION(BlueprintPure, Category = "C++ Functions")
+			FText GetLevelCurrentIntText();
+
+// ===============================================================================
+//		DAMAGE
 // ===============================================================================
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++ Variables")
-			float RedScreenFlash;
+			bool RedScreenFlash;
 
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
 			bool PlayRedScreenFlash();
 
-		/* Damage Timer */
 		UFUNCTION()
 			void DamageTimer();
 
-		/** Set Damage State */
 		UFUNCTION()
 			void SetDamageState();
 
 		float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser);
 
-		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
-			void UpdateHealthCurrent(float HealthChange);
-
 // ===============================================================================
-//
-//		PLAYER SKILLS (PUBLIC)
-//
+//		SKILLS
 // ===============================================================================
 
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
@@ -152,11 +185,8 @@ public:
 		UFUNCTION(BlueprintCallable, Category = "C++ Skill Functions")
 			int SkillDiceRollGrowthSlow();
 
-	
 // =================================================================================
-//
-//		PLAYER CURRENCY - $$$ (PUBLIC)
-//
+//		CURRENCY - $$$
 // =================================================================================	
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
 			int CoinGold = 0;
@@ -168,8 +198,9 @@ public:
 			int CoinCopper = 0;
 
 
-//////////////////////////////////////////////////////////////////////////////
-
+// =================================================================================
+//		MOVEMENT
+// =================================================================================
 		/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 			float BaseTurnRate;
@@ -197,9 +228,7 @@ public:
 
 
 // ================================================================================
-//
-//		INVENTORY & HUD (PUBLIC)
-//
+//		INVENTORY
 // ================================================================================
 public:
 
@@ -220,12 +249,8 @@ public:
 
 		uint8 MaterialType;
 
-
-
 // ============================================================================
-//
-//		MOVEMENT
-//
+//		INPUT
 // ============================================================================
 protected:
 
@@ -250,11 +275,8 @@ protected:
 		 */
 		void LookUpAtRate(float Rate);
 
-
 // ============================================================================
-//
-//		INVENTORY FUNCTIONALITY  (PRIVATE)
-//
+//		INVENTORY
 // ============================================================================
 private:
 
@@ -273,11 +295,8 @@ private:
 
 		void MoveDownInventorySlot();
 
-
 // ===============================================================================
-//
 //		HELD ITEM (ITEMBASE DERIVATIVES) & MOUSE BUTTON ITEM FUNCTIONALITY
-//
 // ===============================================================================
 private:
 	
@@ -301,11 +320,8 @@ private:
 		// Timer Between tool swings
 		FTimerHandle HitAnimHandle;
 
-
 // ===============================================================================
-//
 //		BLOCK FUNCTIONALITY
-//
 // ===============================================================================
 private:
 

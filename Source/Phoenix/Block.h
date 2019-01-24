@@ -53,12 +53,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "C++ Functions")
 		void SpawnItemBlock();
 
-// 	UPROPERTY(EditDefaultsOnly, Category = "C++ Variables")
-// 		TSubclassOf<class APhantomBlock> SpawnedPhantomBlock;
-// 
-// 	UFUNCTION(BlueprintCallable, Category = "C++ Functions")
-// 		void SpawnPhantomBlock();
-
 	// Called when block hits the final breaking stage
 	void OnBroken(bool HasRequiredPickaxe);
 

@@ -93,33 +93,6 @@ void ABlock::SpawnItemBlock()
 	}
 }
 
-// void ABlock::SpawnPhantomBlock()
-// {
-// 	if (SpawnedPhantomBlock)
-// 	{
-// 		UWorld* world = GetWorld();
-// 
-// 		if (world)
-// 		{
-// 			FActorSpawnParameters spawnParams;
-// 			spawnParams.Owner = this;
-// 			spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-// 
-// 			FRotator rotator;
-// 
-// 			FVector spawnLocation = SM_Block->GetComponentLocation() + FVector(0.2f, 48.4f, 10.0f);
-// 
-// 			world->SpawnActor<APhantomBlock>(SpawnedPhantomBlock, spawnLocation, rotator, spawnParams);
-// 
-// 
-// 			// DEBUG
-// 			FString msg = (TEXT("PhantomBlock SPAWNED"));
-// 
-// 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, msg);
-// 		}
-// 	}
-// }
-
 /* Try OnBroken... shrink the broken block, make it float and rotate.
    Then the OnOverlap fxn can work on this smaller block */
 void ABlock::OnBroken(bool HasRequiredPickaxe)

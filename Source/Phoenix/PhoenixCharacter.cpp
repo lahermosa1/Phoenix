@@ -91,6 +91,14 @@ void APhoenixCharacter::BeginPlay()
 	FoodPercent = 1.0f;
 	FoodLossAmt = 0.1f;  // Lower later for gameplay (0.01f maybe?)
 
+	XpMax = 1000.0f;
+	XpCurrent = 0.0f;
+	XpPercent = 0.0f;
+
+	LevelMax = 100;
+	LevelCurrent = 1;
+	LevelNew = LevelCurrent;
+
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	SKM_WieldedItem->AttachToComponent(SKM_Player, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 }
@@ -106,10 +114,8 @@ void APhoenixCharacter::Tick(float DeltaTime)
 
 
 // =============================================================================
-//
-//		PLAYER HEALTH & DAMAGE LOGIC
-//
-// Reference: https://unrealcpp.com/health-bar-ui-hud/
+//		HEALTH
+//		Reference: https://unrealcpp.com/health-bar-ui-hud/
 // =============================================================================
 float APhoenixCharacter::GetHealthCurrent()
 {
@@ -125,7 +131,15 @@ FText APhoenixCharacter::GetHealthCurrentIntText()
 	return HPText;
 }
 
-// *********** //
+void APhoenixCharacter::UpdateHealthCurrent(float HealthChange)
+{
+	HealthCurrent = FMath::Clamp(HealthCurrent += HealthChange, 0.0f, HealthMax);
+	HealthPercent = HealthCurrent / HealthMax;
+}
+
+// ================================================================================
+//		FOOD
+// ================================================================================
 
 float APhoenixCharacter::GetFoodCurrent()
 {
@@ -138,6 +152,7 @@ FText APhoenixCharacter::GetFoodCurrentIntText()
 	FString FoodString = FString::FromInt(Food);
 	FString FoodHUDString = FoodString + FString(TEXT("%"));
 	FText FoodText = FText::FromString(FoodHUDString);
+
 	return FoodText;
 }
 
@@ -176,8 +191,75 @@ float APhoenixCharacter::LoseFood(float FoodLoss)
 	return FoodPercent;
 }
 
-// *********** //
 
+// ================================================================================
+//		XP & LEVELING
+// ================================================================================
+float APhoenixCharacter::GetXpCurrent()
+{
+	return XpPercent;
+}
+
+FText APhoenixCharacter::GetXpCurrentIntText()
+{
+	int32 Xp = FMath::RoundHalfFromZero(XpPercent * 100);
+	FString XpString = FString::FromInt(Xp);
+	FString XpHUDString = XpString + FString(TEXT("%"));
+	FText XpText = FText::FromString(XpHUDString);
+
+	return XpText;
+}
+
+float APhoenixCharacter::EarnXp(float XpGain)
+{
+	XpCurrent += XpGain;
+
+	if (XpCurrent >= XpMax) 
+	{
+		XpCurrent = 0.0f;
+
+		LevelUp();
+	}
+
+	XpPercent = XpCurrent / XpMax;
+
+	return XpPercent;
+}
+
+int APhoenixCharacter::GetLevelCurrent()
+{
+	return LevelNew;
+}
+
+int APhoenixCharacter::LevelUp()
+{
+	if(LevelCurrent < LevelMax)
+	{
+		LevelCurrent += 1;
+	}
+	if(LevelCurrent >= LevelMax)
+	{
+		LevelCurrent = LevelMax;
+	}
+
+	LevelNew = LevelCurrent;
+
+	return LevelNew;
+}
+
+FText APhoenixCharacter::GetLevelCurrentIntText()
+{
+	int32 level = LevelNew;
+	FString levelString = FString::FromInt(level);;
+	FText levelText = FText::FromString(levelString);
+
+	return levelText;
+}
+
+// ================================================================================
+//		DAMAGE
+//      Reference: https://unrealcpp.com/health-bar-ui-hud/
+// ================================================================================
 bool APhoenixCharacter::PlayRedScreenFlash()
 {
 	if(RedScreenFlash)
@@ -212,17 +294,9 @@ float APhoenixCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Magenta, msg);
 }
 
-void APhoenixCharacter::UpdateHealthCurrent(float HealthChange)
-{
-	HealthCurrent = FMath::Clamp(HealthCurrent += HealthChange, 0.0f, HealthMax);
-	HealthPercent = HealthCurrent / HealthMax;
-}
-
 // =============================================================================
-//
-//		PLAYER GAMEPLAY FUNCTIONS
-//
-// Reference: http://www.cplusplus.com/reference/cstdlib/rand/
+//		SKILL GROWTH FUNCTIONS
+//		Reference: http://www.cplusplus.com/reference/cstdlib/rand/
 // =============================================================================
 int APhoenixCharacter::SkillDiceRollGrowthFast()
 {
@@ -243,9 +317,7 @@ int APhoenixCharacter::SkillDiceRollGrowthSlow()
 }
 
 // ================================================================================
-//
 //		INPUT
-//
 // ================================================================================
 void APhoenixCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -282,9 +354,7 @@ void APhoenixCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 
 // ===========================================================================
-//
-//		INVENTORY FUNCTIONALITY
-//
+//		INVENTORY
 // ===========================================================================
 int32 APhoenixCharacter::GetCurrentInventorySlot()
 {
@@ -335,9 +405,7 @@ void APhoenixCharacter::MoveDownInventorySlot()
 
 
 // ===================================================================
-//
 //		MOVEMENT
-//
 // ===================================================================
 
 void APhoenixCharacter::MoveForward(float Value)
@@ -372,9 +440,7 @@ void APhoenixCharacter::LookUpAtRate(float Rate)
 
 
 // ===================================================================================
-//
-//		WIELDED ITEM & MOUSE BUTTON ITEM FUNCTIONALITY
-//
+//		ITEMBASE & MOUSE BUTTON
 // ===================================================================================
 void APhoenixCharacter::UpdateItem()
 {
@@ -486,11 +552,8 @@ void APhoenixCharacter::PlayHitAnim()
 	}
 }
 
-
 // =================================================================================
-//
-//		BLOCK FUNCTIONALITY
-//
+//		BLOCK
 // =================================================================================
 void APhoenixCharacter::CheckForBlock()
 {
