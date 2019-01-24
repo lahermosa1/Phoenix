@@ -74,6 +74,35 @@ public:
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
 			FText GetHealthCurrentIntText();
 
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			float FoodMax;
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			float FoodCurrent;
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			float FoodPercent;
+
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
+			float FoodLossAmt;
+
+		/*FTimerHandle MemberTimerHandle;*/
+
+		/** Get Health */
+		UFUNCTION(BlueprintPure, Category = "C++ Functions")
+			float GetFoodCurrent();
+
+		/** Get Health Text */
+		UFUNCTION(BlueprintPure, Category = "C++ Functions")
+			FText GetFoodCurrentIntText();
+
+		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
+			float EatFood (float FoodGain);
+
+		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
+			float LoseFood(float FoodLoss);
+
 // ===============================================================================
 //
 //		PLAYER DAMAGE (PUBLIC)
@@ -83,7 +112,7 @@ public:
 			float RedScreenFlash;
 
 		UFUNCTION(BlueprintPure, Category = "C++ Functions")
-			bool PlayRedSreenFlash();
+			bool PlayRedScreenFlash();
 
 		/* Damage Timer */
 		UFUNCTION()
@@ -137,34 +166,6 @@ public:
 
 		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
 			int CoinCopper = 0;
-
-
-// =================================================================================
-//
-//		PLAYER LEVELING (PUBLIC)
-//
-// =================================================================================
-		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
-			float XpMax;
-
-		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
-			float XpCurrent;
-
-		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "C++ Variables")
-			float XpPercent;
-
-		/** Get Health */
-		UFUNCTION(BlueprintPure, Category = "C++ Functions")
-			float GetXpCurrent();
-
-		/** Get Health Text */
-		UFUNCTION(BlueprintPure, Category = "C++ Functions")
-			FText GetXpCurrentIntText();
-
-		float EarnXp(float XpEarned);
-
-		UFUNCTION(BlueprintCallable, Category = "C++ Functions")
-			void UpdateXpCurrent(float XpChange);
 
 
 //////////////////////////////////////////////////////////////////////////////

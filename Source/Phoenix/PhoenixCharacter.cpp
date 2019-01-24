@@ -8,6 +8,7 @@
 #include "PhoenixProjectile.h"
 #include "Wieldable.h"
 #include "ItemBase.h"
+#include "ItemBlock.h"
 #include "Block.h"
 
 #include <Animation/AnimInstance.h>
@@ -24,8 +25,6 @@
 #include <cmath>
 #include <random>
 #include <stdlib.h>
-#include "ItemBlock.h"
-
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -87,10 +86,10 @@ void APhoenixCharacter::BeginPlay()
 	HealthPercent = 1.0f;
 	bCanBeDamaged = true;
 
-	XpMax = 1000.0f;
-	XpCurrent = 0.0f;   // Make sure to NOT divide by zero!!!!!
-	XpPercent = 1.0f;
-
+	FoodMax = 1000.0f;
+	FoodCurrent = FoodMax;
+	FoodPercent = 1.0f;
+	FoodLossAmt = 0.1f;  // Lower later for gameplay (0.01f maybe?)
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	SKM_WieldedItem->AttachToComponent(SKM_Player, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
@@ -101,6 +100,8 @@ void APhoenixCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	CheckForBlock();
+
+	LoseFood(FoodLossAmt);
 }
 
 
@@ -124,7 +125,60 @@ FText APhoenixCharacter::GetHealthCurrentIntText()
 	return HPText;
 }
 
-bool APhoenixCharacter::PlayRedSreenFlash()
+// *********** //
+
+float APhoenixCharacter::GetFoodCurrent()
+{
+	return FoodPercent;
+}
+
+FText APhoenixCharacter::GetFoodCurrentIntText()
+{
+	int32 Food = FMath::RoundHalfFromZero(FoodPercent * 100);
+	FString FoodString = FString::FromInt(Food);
+	FString FoodHUDString = FoodString + FString(TEXT("%"));
+	FText FoodText = FText::FromString(FoodHUDString);
+	return FoodText;
+}
+
+/*  Call this function from FoodClass and simply add in Food value of FOodClass as FoodGain */
+/* OR...create FoodClass with FoodValue, cast to the AFoodClass, then set FOodValue = to FoodGain */
+float APhoenixCharacter::EatFood(float FoodGain)
+{
+	if (FoodCurrent < 1000.0f)
+	{
+		FoodCurrent += FoodGain;
+	}
+	if (FoodCurrent >= 1000.0f)
+	{
+		FoodCurrent = 1000.0f;
+	}
+
+	FoodPercent = FoodCurrent / FoodMax;
+
+	return FoodPercent;
+}
+
+float APhoenixCharacter::LoseFood(float FoodLoss)
+{
+	if(FoodCurrent > 0.0f)
+	{
+		FoodCurrent -= FoodLoss;
+	}
+	if(FoodCurrent <= 0.0f)
+	{
+		FoodCurrent = 0.0f;
+		/* Will start to lose health */
+	}
+
+	FoodPercent = FoodCurrent / FoodMax;
+	
+	return FoodPercent;
+}
+
+// *********** //
+
+bool APhoenixCharacter::PlayRedScreenFlash()
 {
 	if(RedScreenFlash)
 	{
@@ -160,7 +214,6 @@ float APhoenixCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 
 void APhoenixCharacter::UpdateHealthCurrent(float HealthChange)
 {
-	
 	HealthCurrent = FMath::Clamp(HealthCurrent += HealthChange, 0.0f, HealthMax);
 	HealthPercent = HealthCurrent / HealthMax;
 }
@@ -187,38 +240,6 @@ int APhoenixCharacter::SkillDiceRollGrowthSlow()
 {
 	int result = rand() % 2;
 	return result;
-}
-
-
-// =============================================================================
-//
-//		PLAYER XP LOGIC
-//
-// =============================================================================
-float APhoenixCharacter::GetXpCurrent()
-{
-	return XpPercent;
-}
-
-FText APhoenixCharacter::GetXpCurrentIntText()
-{
-	int EXP = FMath::RoundHalfFromZero(XpPercent * 100);
-	FString EXPS = FString::FromInt(EXP);
-	FString XpHUD = EXPS + FString(TEXT("%"));
-	FText EXPText = FText::FromString(XpHUD);
-	return EXPText;
-}
-
-float APhoenixCharacter::EarnXp(float XpEarned)
-{
-	UpdateXpCurrent(+XpEarned);
-	return XpEarned;
-}
-
-void APhoenixCharacter::UpdateXpCurrent(float XpChange)
-{
-	XpCurrent = FMath::Clamp(XpCurrent += XpChange, 0.0f, XpMax);
-	XpPercent = XpCurrent / XpMax;
 }
 
 // ================================================================================

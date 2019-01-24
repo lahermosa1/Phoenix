@@ -120,6 +120,8 @@ void ABlock::SpawnItemBlock()
 // 	}
 // }
 
+/* Try OnBroken... shrink the broken block, make it float and rotate.
+   Then the OnOverlap fxn can work on this smaller block */
 void ABlock::OnBroken(bool HasRequiredPickaxe)
 {	
 	SpawnItemBlock();
